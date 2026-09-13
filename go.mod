@@ -1,4 +1,4 @@
-module gurl
+module github.com/mohit-bhandari45/gurl
 
 go 1.25.0
 
