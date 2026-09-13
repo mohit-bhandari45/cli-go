@@ -31,7 +31,8 @@ func Execute() error {
 }
 
 func init() {
-	// String var p means the flag is string, var means the variable is and p means posix for both short and long flag
+	// StringVarP binds a string flag supporting both long (--method) and short POSIX (-X) shorthand formats into a target variable pointer.
+	
 	rootCmd.Flags().StringVarP(&method, "method", "X", "GET", "HTTP method (GET, POST, etc.)");
 	rootCmd.Flags().IntVarP(&totalReqs, "requests", "n", 100, "Total number of HTTP requests to send");
 	rootCmd.Flags().IntVarP(&concurrency, "concurrency", "c", 10, "Number of concurrent worker goroutines");
