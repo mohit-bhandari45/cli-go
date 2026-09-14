@@ -2,6 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/mohit-bhandari45/gurl/internal/runner"
 	"github.com/spf13/cobra"
 )
 
@@ -21,15 +26,36 @@ var rootCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		targetURL := args[0]
-		fmt.Printf("Target URL: %s\n", targetURL)
-		fmt.Printf("Method: %s\n", method)
-		fmt.Printf("Headers: %v\n", headers)
-		fmt.Printf("Data: %s\n", data)
-		fmt.Printf("Total Requests: %d\n", totalReqs)
-		fmt.Printf("Concurrency: %d\n", concurrency)
-		fmt.Printf("Output Format: %s\n", output)
+
+		cfg := runner.RequestConfig {
+			URL: targetURL,
+			Method: method,
+			Headers: parseHeaders(headers),
+			Body: []byte(data),
+			Timeout: 10 * time.Second,
+			TotalReqs: totalReqs,
+			Concurrency: concurrency,
+		}
+
+		fmt.Println("Starting load test...")
+		results := runner.Run(cfg)
+		fmt.Printf("Completed load test! Total results collected: %d\n", len(results))
+		
 		return nil
 	},
+}
+
+func parseHeaders(headers []string) http.Header {
+	h := make(http.Header);
+	
+	for _, header := range headers {
+		parts := strings.SplitN(header, ":", 2);
+		if len(parts) == 2 {
+			h.Add(strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]));
+		}
+	}
+
+	return h;
 }
 
 func Execute() error {
