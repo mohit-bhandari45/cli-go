@@ -53,3 +53,22 @@ func doRequest(client *http.Client, cfg RequestConfig) Result {
 		BytesRead:  int64(len(bodyBytes)),
 	}
 }
+
+func Run(cfg RequestConfig) error {
+	client := &http.Client{
+		Timeout: cfg.Timeout,
+		Transport: &http.Transport{
+			MaxIdleConnsPerHost: cfg.Concurrency,
+		},
+	};
+
+	jobs := make(chan struct{}, cfg.TotalReqs);
+
+	for i := 0;i < cfg.TotalReqs;i++ {
+		jobs <- struct{}{};
+	}
+
+	close(jobs);
+
+	return nil;
+}
