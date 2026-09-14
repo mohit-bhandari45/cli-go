@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// request config to store request config
 type RequestConfig struct {
 	URL 			string
 	Method			string
