@@ -8,7 +8,7 @@ import (
 	"github.com/mohit-bhandari45/gurl/internal/stats"
 )
 
-func PrintJson(sum stats.Summary) error {
+func PrintJSON(sum stats.Summary) error {
 	jsonData, err := json.MarshalIndent(sum, "", "");
 	if err != nil {
 		return fmt.Errorf("failed to marshal summary to JSON: %w", err)
