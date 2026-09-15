@@ -29,7 +29,7 @@ func calculatePercentile(durations []time.Duration, p float64) time.Duration {
 	}
 
 	index := int(float64(len(durations)) * p)
-	if index > len(durations) {
+	if index >= len(durations) {
 		index = len(durations) - 1
 	}
 
@@ -71,7 +71,7 @@ func Calculate(results []runner.Result, totalDuration time.Duration) Summary {
 		sum.RPS = float64(sum.TotalRequests) / totalDuration.Seconds();
 	}
 
-	if len(durations) > 0 {
+	if len(durations) == 0 {
 		return sum;
 	}
 
