@@ -61,33 +61,33 @@ func Run(cfg RequestConfig) []Result {
 		Transport: &http.Transport{
 			MaxIdleConnsPerHost: cfg.Concurrency,
 		},
-	};
-
-	jobs := make(chan struct{}, cfg.TotalReqs);  // to hold all the jobs
-	results := make(chan Result, cfg.TotalReqs);  // to hold all the results
-
-	for i := 0;i < cfg.TotalReqs;i++ {
-		jobs <- struct{}{};
 	}
 
-	close(jobs);
+	jobs := make(chan struct{}, cfg.TotalReqs)  // to hold all the jobs
+	results := make(chan Result, cfg.TotalReqs) // to hold all the results
+
+	for i := 0; i < cfg.TotalReqs; i++ {
+		jobs <- struct{}{}
+	}
+
+	close(jobs)
 
 	// workers now running as jobs are done added all
-	var wg sync.WaitGroup;
-	for i := 0 ;i < cfg.Concurrency;i++ {
-		wg.Add(1);
+	var wg sync.WaitGroup
+	for i := 0; i < cfg.Concurrency; i++ {
+		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for range jobs {
-				res := doRequest(client, cfg);
-				results <- res;
+				res := doRequest(client, cfg)
+				results <- res
 			}
 		}()
 	}
 
-	go func ()  {
-		wg.Wait();
-		close(results);
+	go func() {
+		wg.Wait()
+		close(results)
 	}()
 
 	var resList []Result

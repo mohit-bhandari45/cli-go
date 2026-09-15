@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/mohit-bhandari45/gurl/internal/runner"
+	"github.com/mohit-bhandari45/gurl/internal/stats"
 	"github.com/spf13/cobra"
 )
 
@@ -37,10 +38,13 @@ var rootCmd = &cobra.Command{
 			Concurrency: concurrency,
 		}
 
-		fmt.Println("Starting load test...")
+		start := time.Now();
 		results := runner.Run(cfg)
-		fmt.Printf("Completed load test! Total results collected: %d\n", len(results))
-		
+		totalDuration := time.Since(start);
+		summary := stats.Calculate(results, totalDuration);
+
+		fmt.Printf("Completed in %v! RPS: %.2f\n", totalDuration, summary.RPS)
+
 		return nil
 	},
 }

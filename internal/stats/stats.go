@@ -34,3 +34,35 @@ func calculatePercentile(durations []time.Duration, p float64) time.Duration {
 
 	return durations[index];
 }
+
+func Calculate(results []runner.Result, totalDuration time.Duration) Summary {
+	sum := Summary {
+		TotalRequests: len(results),
+		TotalDuration: totalDuration,
+		StatusCodes: make(map[int]int),
+		Errors: make(map[string]int),
+	}
+
+	if len(results) == 0 {
+		return sum
+	}
+
+	var totalDurationSum time.Duration;
+	for _, r := range results {
+		if r.Error != "" {
+			sum.FailedRequests++;
+			sum.Errors[r.Error]++
+		}else {
+			if r.StatusCode >= 200 && r.StatusCode < 400 {
+				sum.SuccessRequests++;
+			} else {
+				sum.FailedRequests++;
+			}
+			sum.StatusCodes[r.StatusCode]++;
+		}
+
+		if r.Duration > 0 {
+			totalDurationSum += r.Duration;
+		}
+	}
+}
