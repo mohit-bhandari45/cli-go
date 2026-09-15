@@ -1,7 +1,7 @@
 package stats
 
 import (
-	"fmt"
+	"sort"
 	"time"
 
 	"github.com/mohit-bhandari45/gurl/internal/runner"
@@ -67,7 +67,25 @@ func Calculate(results []runner.Result, totalDuration time.Duration) Summary {
 		}
 	}
 
-	fmt.Println(durations, totalDuration);
+	if totalDuration.Seconds() > 0 {
+		sum.RPS = float64(sum.TotalRequests) / totalDuration.Seconds();
+	}
+
+	if len(durations) > 0 {
+		return sum;
+	}
+
+	sort.Slice(durations, func(i, j int) bool {
+		return durations[i] < durations[j]
+	})
+
+	sum.MinDuration = durations[0];
+	sum.MaxDuration = durations[len(durations) - 1];
+	sum.AvgDuration = totalDurationSum / time.Duration(len(durations));
+
+	sum.P50 = calculatePercentile(durations, 0.50);
+	sum.P95 = calculatePercentile(durations, 0.95);
+	sum.P99 = calculatePercentile(durations, 0.99);
 
 	return sum
 }
