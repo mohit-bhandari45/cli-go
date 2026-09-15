@@ -9,12 +9,11 @@ import (
 )
 
 func PrintJSON(sum stats.Summary) error {
-	jsonData, err := json.MarshalIndent(sum, "", "");
+	jsonData, err := json.MarshalIndent(sum, "", "   ");
 	if err != nil {
 		return fmt.Errorf("failed to marshal summary to JSON: %w", err)
 	}
 
-	fmt.Println(jsonData);
 	fmt.Println(string(jsonData))
 	return nil
 }
