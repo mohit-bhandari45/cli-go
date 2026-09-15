@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/mohit-bhandari45/gurl/internal/runner"
@@ -24,45 +25,49 @@ type Summary struct {
 
 func calculatePercentile(durations []time.Duration, p float64) time.Duration {
 	if len(durations) == 0 {
-		return 0;
+		return 0
 	}
 
-	index := int(float64(len(durations)) * p);
+	index := int(float64(len(durations)) * p)
 	if index > len(durations) {
-		index = len(durations) - 1;
+		index = len(durations) - 1
 	}
 
-	return durations[index];
+	return durations[index]
 }
 
 func Calculate(results []runner.Result, totalDuration time.Duration) Summary {
-	sum := Summary {
+	sum := Summary{
 		TotalRequests: len(results),
 		TotalDuration: totalDuration,
-		StatusCodes: make(map[int]int),
-		Errors: make(map[string]int),
+		StatusCodes:   make(map[int]int),
+		Errors:        make(map[string]int),
 	}
 
-	if len(results) == 0 {
-		return sum
-	}
-
+	var durations []time.Duration;
 	var totalDurationSum time.Duration;
-	for _, r := range results {
-		if r.Error != "" {
-			sum.FailedRequests++;
-			sum.Errors[r.Error]++
-		}else {
-			if r.StatusCode >= 200 && r.StatusCode < 400 {
-				sum.SuccessRequests++;
+
+	for _, res := range results {
+		if res.Error != "" {
+			sum.Errors[res.Error]++
+			sum.FailedRequests++
+		} else {
+			if res.StatusCode >= 200 && res.StatusCode < 400 {
+				sum.SuccessRequests++
 			} else {
-				sum.FailedRequests++;
+				sum.FailedRequests++
+
 			}
-			sum.StatusCodes[r.StatusCode]++;
+			sum.StatusCodes[res.StatusCode]++
 		}
 
-		if r.Duration > 0 {
-			totalDurationSum += r.Duration;
+		if res.Duration > 0 {
+			durations = append(durations, res.Duration);
+			totalDurationSum += res.Duration;
 		}
 	}
+
+	fmt.Println(durations, totalDuration);
+
+	return sum
 }
