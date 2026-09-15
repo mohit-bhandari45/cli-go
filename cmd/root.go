@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/mohit-bhandari45/gurl/internal/printer"
 	"github.com/mohit-bhandari45/gurl/internal/runner"
 	"github.com/mohit-bhandari45/gurl/internal/stats"
 	"github.com/spf13/cobra"
@@ -43,8 +43,10 @@ var rootCmd = &cobra.Command{
 		totalDuration := time.Since(start);
 		summary := stats.Calculate(results, totalDuration);
 
-		fmt.Printf("Completed in %v! RPS: %.2f\n", totalDuration, summary.RPS)
-
+		if output == "json" {
+			return printer.PrintJSON(summary)
+		}
+		printer.PrintText(summary, false)
 		return nil
 	},
 }
