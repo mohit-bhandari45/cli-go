@@ -43,7 +43,8 @@ var rootCmd = &cobra.Command{
 		totalDuration := time.Since(start);
 		summary := stats.Calculate(results, totalDuration);
 
-		fmt.Printf("Completed in %v! RPS: %.2f\n", totalDuration, summary.RPS)
+		fmt.Println(totalDuration, summary);
+		fmt.Println(totalDuration.Seconds(), summary);
 
 		return nil
 	},
